@@ -1,7 +1,8 @@
-;DANIEL MORGERA PEREZ
-;VICTOR NIEVES SANCHEZ
+;AUTORES:
+;	DANIEL MORGERA PEREZ
+;	VICTOR NIEVES SANCHEZ
 
-;MACROS:
+;----------MACROS--------------
 ;Carga el registro ra con la direccion efectiva definida por la etiqueta ETIQ
 LEA:    MACRO  (reg, ETIQ)
         or     reg, r0,  low(ETIQ)
@@ -14,12 +15,14 @@ DBNZ:	MACRO (ra, ETIQ)
 	cmp r5, ra, 0
 	bb0 eq, r5, ETIQ
 	ENDMACRO  
-	
+
+;Añade un elemento a la cima de la pila
 PUSH:   MACRO  (reg)
         subu   r30, r30, 4
         st     reg, r30, r0
         ENDMACRO
 
+;Quita el elemento en la cima de la pila
 POP:    MACRO  (reg)
         ld     reg, r30, r0
         addu   r30, r30, 4
@@ -59,7 +62,7 @@ FILTRO: 	data    0, 0, 0
 		data    0, 0, 0
 
 
-;-----PRINCIPAL------
+;-----PROGRAMA PRINCIPAL------
 
 org 1000
 
@@ -116,9 +119,10 @@ PPAL5:		LEA(r30, 50000)
 		PUSH(r3)
 		bsr ValorPixel
 		stop
-;-----NFILTRADOS------
+		
+;---------SUBRUTINAS----------
 
-	
+;---------NFILTRADOS----------
 nFiltrados:	PUSH(r1)
 		ld r4, r30, 4		;r4 = oper
 		cmp r3, r4, r0
@@ -141,8 +145,6 @@ FINNFILT: 	POP(r1)
 		jmp(r1)
 
 ;-----COMPARAR------
-
-
 Comp:		PUSH(r1)
 		or r22, r0, r0		;dif
 		ld r20, r30, 4		;Direccion Im1
@@ -170,8 +172,6 @@ FINCOMP:	divu r22, r22, r2	;dif/M*N
 		jmp(r1)
 		
 ;-----ACTUALIZAFILTRO------
-
-
 ActualizaFiltro:PUSH(r1)
 		ld r28, r30, 4		;Direccion MF
 		ld r27, r30, 8		;Direccion MMF
@@ -192,9 +192,7 @@ BUCAF:		ld r22, r28, r0		;Elemento
 FIN:		POP(r1)
 		jmp(r1)		
 
-;-----SUBMATRIZ------------
-
-	
+;-----SUBMATRIZ------------	
 SubMatriz:	PUSH(r1)
 		ld r23, r30, 4		;Direccion Imagen
 		ld r22, r30, 8		;Dir SubImagen
@@ -246,9 +244,7 @@ BUCSUBM:	st.b r27, r22, r7
 FINSUB: 	POP(r1)
 		jmp(r1)		
 	
-;-----FILPIXEL-------------------
-
-
+;----------VALORPIXEL-----------------
 ValorPixel:	PUSH(r1)
 		or r2, r0, 0		;Acc
 		ld r20, r30, 4		;Puntero SubImg
@@ -265,9 +261,13 @@ BUCVAL:		ld.bu r22, r20, r3	;elemento SubImg
 		PUSH(r1)
 		jmp(r1)
 
-;--------------------------------
+;------------FILPIXEL--------------------
 FilPixel:	add r0, r0, r0	
+
+;------------FILTRO--------------------
 Filtro:		add r0, r0, r0	
+
+;------------FILTREC--------------------
 FiltRec:	add r0, r0, r0	
 
 
