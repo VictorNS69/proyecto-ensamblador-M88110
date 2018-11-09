@@ -1,0 +1,280 @@
+;DANIEL MORGERA PEREZ
+;VICTOR NIEVES SANCHEZ
+
+;MACROS:
+;Carga el registro ra con la direccion efectiva definida por la etiqueta ETIQ
+LEA:    MACRO  (reg, ETIQ)
+        or     reg, r0,  low(ETIQ)
+        or.u   reg, reg, high(ETIQ)
+        ENDMACRO
+	
+;Decrementa el registro ra y salta a la etiqueta ETIQ si el resultado no es 0	
+DBNZ:	MACRO (ra, ETIQ)
+	sub ra, ra, 1
+	cmp r5, ra, 0
+	bb0 eq, r5, ETIQ
+	ENDMACRO  
+	
+PUSH:   MACRO  (reg)
+        subu   r30, r30, 4
+        st     reg, r30, r0
+        ENDMACRO
+
+POP:    MACRO  (reg)
+        ld     reg, r30, r0
+        addu   r30, r30, 4
+        ENDMACRO
+
+;-----DATOS----------
+org 0
+
+nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo de 32 bits
+
+;IM1:		data 2, 2
+;		data 0x04030201
+;IM2:		data 2, 2
+;		data 0x08060402
+
+;MFILTRO:       data 2, 2, 2
+;		data 2, 0, 2
+;		data 2, 2, 2
+;MODMFILTRO: 	data 1, 2
+
+;IMAGEN:
+;		data    4, 3
+;		data    0x40302010, 0x80706050, 0xC0B0A090
+
+;SUBIMAGEN:
+;		data    0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+;SUBIMAGEN:
+;		data    0x40302010, 0x80706050, 0x90
+;FILTRO: 	data    1, 2, 3
+;		data    4, 5, 6
+;		data    7, 8, 9
+
+SUBIMAGEN:
+		data    0x00000000, 0x00000055, 0x00
+FILTRO: 	data    0, 0, 0
+		data    0, -2, 0
+		data    0, 0, 0
+
+
+;-----PRINCIPAL------
+
+org 1000
+
+PPAL1:		LEA(r30,50000)	
+;		Test nfiltrados con oper=0
+;		PUSH(r0)		
+;		bsr nFiltrados
+		
+;		Test nfiltrados con oper=5
+;		addu r2, r0, 5		
+;		PUSH(r2)
+;		bsr nFiltrados
+;		POP(r2)
+
+;		Test nfiltrados con oper=-5
+;		subu r2, r0, 5
+;		st r2, r0, 0
+;		PUSH(r2)
+;		bsr nFiltrados
+;		POP(r2)
+;		stop
+
+;PPAL2:		LEA(r30, 50000)
+;		LEA(r2, IM1)
+;		LEA(r3, IM2)
+;		PUSH(r3)
+;		PUSH(r2)
+;		bsr Comp
+;		stop
+
+;PPAL3:		LEA(r30, 50000)
+;		LEA(r2, MFILTRO)
+;		LEA(r3, MODMFILTRO)
+;		PUSH(r3)
+;		PUSH(r2)
+;		bsr ActualizaFiltro
+;		stop
+
+;PPAL4:		LEA(r30, 50000)
+;		LEA(r2, IMAGEN)
+;		LEA(r3, SUBIMAGEN)
+;		addu r4, r0, 1
+;		PUSH(r4)
+;		PUSH(r4)
+;		PUSH(r3)
+;		PUSH(r2)
+;		bsr SubMatriz
+;		stop	
+
+PPAL5:		LEA(r30, 50000)
+		LEA(r2, FILTRO)
+		LEA(r3, SUBIMAGEN)
+		PUSH(r2)
+		PUSH(r3)
+		bsr ValorPixel
+		stop
+;-----NFILTRADOS------
+
+	
+nFiltrados:	PUSH(r1)
+		ld r4, r30, 4		;r4 = oper
+		cmp r3, r4, r0
+		bb1 ge, r3, INIC
+		ld r8, r0, 0		;r8 = nF
+		cmp r3, r8, r0
+		bb1 lt, r3, ZERO
+		bb1 eq, r3, NF_0
+		sub r8, r8, 1		;nF-1 -> nF
+		br NF_0
+INIC:		st r4, r0, 0
+		or r29, r4, r0
+		br FINNFILT
+ZERO:		st r0, r0, 0
+		or r29, r0, 0
+		br FINNFILT
+NF_0:		st r8, r0, 0
+		or r29, r8 ,r0
+FINNFILT: 	POP(r1)
+		jmp(r1)
+
+;-----COMPARAR------
+
+
+Comp:		PUSH(r1)
+		or r22, r0, r0		;dif
+		ld r20, r30, 4		;Direccion Im1
+		ld r21, r30, 8 		;Direccion Im2
+		ld r2, r20, 0		;M
+		ld r3, r20, 4		;N
+		mulu r2, r2, r3		;M*N
+		or r3, r0, r0		;i = 0
+		addu r20, r20, 8
+		addu r21, r21, 8
+BUCCMP:		cmp r6, r2, r3
+		bb1 eq, r6, FINCOMP	
+		ld.bu r23, r20, r0	;Im1ij
+		ld.bu r24, r21, r0	;Im2ij
+		subu r4, r23, r24	;Im1ij - Im2ij
+		mulu r4, r4, r4		;(Im1ij - Im2ij)^2
+		addu r22, r22, r4	;dif = dif + (Im1ij - Im2ij)^2
+		addu r20, r20, 1
+		addu r21, r21, 1
+		addu r3, r3, 1
+		br BUCCMP
+FINCOMP:	divu r22, r22, r2	;dif/M*N
+		or r29, r22, r0
+		POP(r1)
+		jmp(r1)
+		
+;-----ACTUALIZAFILTRO------
+
+
+ActualizaFiltro:PUSH(r1)
+		ld r28, r30, 4		;Direccion MF
+		ld r27, r30, 8		;Direccion MMF
+		ld r20, r27, 0		;Numerador
+		ld r21, r27, 4		;Denominador
+		or r10, r0, 9		;i = 9
+		
+		cmp r2, r20, r0		;Numerador = 0?
+		bb1 eq, r2, FIN
+		cmp r2, r21, r0		;Denominador = 0?
+		bb1 eq, r2, FIN
+BUCAF:		ld r22, r28, r0		;Elemento
+		muls r23, r22, r20	;MFiltro(i) * Numerador
+		divs r24, r23, r21	;Elemento / Denominador
+		st r24, r28, r0
+		addu r28, r28, 4
+		DBNZ(r10, BUCAF)
+FIN:		POP(r1)
+		jmp(r1)		
+
+;-----SUBMATRIZ------------
+
+	
+SubMatriz:	PUSH(r1)
+		ld r23, r30, 4		;Direccion Imagen
+		ld r22, r30, 8		;Dir SubImagen
+		ld r20, r30, 12		;i
+		ld r21, r30, 16		;j
+		ld r24, r23, 0		;M
+		ld r25, r23, 4		;N
+		addu r26, r23, 8	;Direccion primer elemento Imagen
+		mulu r2, r24, r25	;MxN
+		subu r24, r24, 1	;M-1
+		subu r25, r25, 1	;N-1
+		cmp r3, r20, r0		;i=?0
+		bb1 eq, r3, BORDE	
+		cmp r3, r21, r0		;j=?0
+		bb1 eq, r3, BORDE
+		cmp r3, r20, r24	;i=?M-1
+		bb1 eq, r3, BORDE
+		cmp r3, r21, r25	;j=?N-1
+		bb1 eq, r3, BORDE
+NOBORDE:	addu r25, r25, 1	;N principio
+		subu r20, r20, 1	;i-1
+		subu r21, r21, 1	;j-1
+		mulu r4, r21, r25	;Nxj
+		addu r4, r4, r20	;desplazamiento para ij
+		addu r27, r26, r4	;puntero a Im(ij)
+		addu r7, r0, 3		;contador elementos
+		addu r8, r0, 3		;contador filas
+		addu r9, r0, r0 	;contador avance
+		addu r10, r0, r0	;contador subimagen
+BUCNOBOR:	ld.bu r28, r27, r9	;elemento a r28
+		st.b r28, r22, r10	;guardo elemento en submatriz
+		addu r9, r9, 1		;
+		addu r10, r10, 1	;
+		DBNZ(r7, BUCNOBOR)
+		addu r7, r0, 3		;reinicio contador elementos
+		addu r27, r27, r25	;avanzo hasta siguiente fila submatriz
+		or r9, r0, 0		;reinicio contador avance
+		DBNZ(r8, BUCNOBOR)
+		br FINSUB
+BORDE:		addu r25, r25, 1	;N+1
+		mulu r4, r24, r25	;Nx(j-1)
+		addu r4, r4, r20	;ij
+		ld.bu r27, r26, r4	;Imagen(ij)
+		addu r6, r0, 8		;ContadorDBNZ=8
+		addu r7, r0, 0		;ContadorAvance=0
+BUCSUBM:	st.b r27, r22, r7
+		addu r7, r7, 1		
+		DBNZ(r6, BUCSUBM)
+FINSUB: 	POP(r1)
+		jmp(r1)		
+	
+;-----FILPIXEL-------------------
+
+
+ValorPixel:	PUSH(r1)
+		or r2, r0, 0		;Acc
+		ld r20, r30, 4		;Puntero SubImg
+		ld r21, r30, 8		;Puntero MFiltro
+		addu r3, r0, 8		;Contador
+		addu r15, r0, 32
+BUCVAL:		ld.bu r22, r20, r3	;elemento SubImg
+		ld r23, r21, r15		;elemento MFiltro
+		muls r4, r22, r23	;elementoSubImgxelementoMFiltro
+		addu r2, r2, r4		;acumulo resultado
+		subu r15, r15, 4
+		DBNZ(r3, BUCVAL)
+		or r29, r2, 0
+		PUSH(r1)
+		jmp(r1)
+
+;--------------------------------
+FilPixel:	add r0, r0, r0	
+Filtro:		add r0, r0, r0	
+FiltRec:	add r0, r0, r0	
+
+
+
+
+
+
+
+
+	
