@@ -27,7 +27,8 @@ El proyecto se realizará utilizando el ensamblador nativo del 88110 y empleando
  
 - paralelo: Fichero de configuración de un computador superescalar con cache de instrucciones y datos. 
  
-- INSTALL: ShellScript que instala la aplicación. Además genera el script mc88110 que invoca al emulador con el fichero de configuración serie. Se invoca con ./INSTALL ó sh INSTALL
+- INSTALL: ShellScript que instala la aplicación. Además genera el script mc88110 que invoca al emulador 
+          con el fichero de configuración serie. Se invoca con ./INSTALL ó sh INSTALL
 ```
 
 ## Manual
