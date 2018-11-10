@@ -1,11 +1,14 @@
 25/10/2018:
-Creamos subrutinas nFiltrados, Comp, y ActualizaFiltro.
-Hacemos entrega para la correccion adicional y nFiltrados falla en una prueba.
-Tiempo total de trabajo: 6 horas aprox.
+	Creamos subrutinas nFiltrados, Comp, y ActualizaFiltro.
+	Hacemos entrega para la correccion adicional y nFiltrados falla en una prueba.
+	Tiempo total de trabajo: 6 horas aprox.
+
 26/10/2018:
-Intentamos arreglar nFiltrados, hacemos entrega para el hito pero nFiltrados falla en tres pruebas.
-Tiempo total de trabajo: 1 hora aprox.
+	Intentamos arreglar nFiltrados, hacemos entrega para el hito pero nFiltrados falla en tres pruebas.
+	Tiempo total de trabajo: 1 hora aprox.
+
 8/11/2018:
-Creamos subrutinas ValorPixel y SubMatriz.
-Arreglamos los fallos de nFiltrados.
-Tiempo total de trabajo: 7 horas aprox.
+	Arreglamos los fallos de nFiltrados.
+	Creamos subrutinas ValorPixel y SubMatriz.
+	Tiempo total de trabajo: 7 horas aprox.
+	No se sube nada al servidor de pruebas.
