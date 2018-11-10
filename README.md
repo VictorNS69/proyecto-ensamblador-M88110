@@ -23,11 +23,11 @@ El proyecto se realizará utilizando el ensamblador nativo del 88110 y empleando
 - Modo de redondeo al más cercano.
 
 ```
-- **88110ins**: Programa que permite generar o modificar un fichero de configuración. 
+- 88110ins: Programa que permite generar o modificar un fichero de configuración. 
  
-- **paralelo**: Fichero de configuración de un computador superescalar con cache de instrucciones y datos. 
+- paralelo: Fichero de configuración de un computador superescalar con cache de instrucciones y datos. 
  
-- **INSTALL**: ShellScript que instala la aplicación. Además genera el script _mc88110_ que invoca al emulador con el fichero de configuración serie. Se invoca con _./INSTALL_ ó _sh INSTALL_ 
+- INSTALL: ShellScript que instala la aplicación. Además genera el script mc88110 que invoca al emulador con el fichero de configuración serie. Se invoca con ./INSTALL ó sh INSTALL
 ```
 
 ## Manual
