@@ -7,7 +7,7 @@
 	Intentamos arreglar nFiltrados, hacemos entrega para el hito pero nFiltrados falla en tres pruebas.
 	Tiempo total de trabajo: 1 hora aprox.
 
-8/11/2018:
+08/11/2018:
 	Arreglamos los fallos de nFiltrados.
 	Creamos subrutinas ValorPixel y SubMatriz.
 	No se sube nada al servidor de pruebas.
