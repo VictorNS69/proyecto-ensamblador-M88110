@@ -271,19 +271,19 @@ FilPixel:	PUSH(r1)
 		ld r2, r30, 12		;j
 		ld r20, r30, 16		;DirMF
 		or r4, r30, r0		;DirSubImg
-;----------------------------------------
+;		----------------------------------------
 		PUSH(r2)
 		PUSH(r3)
 		PUSH(r4)
 		PUSH(r21)
 		bsr SubMatriz
-;----------------------------------------
+;		----------------------------------------
 		subu r30, r31, 12	;Puntero de pila en variables locales
 		ld r4, r30, 0		;SubMatriz
 		PUSH(r20)
 		PUSH(r4)
 		bsr ValorPixel
-;----------------------------------------
+;		----------------------------------------
 		or r6, r0, r0		;acumulador=0
 		addu r7, r0, 8		;contador DBNZ
 PESO:		ld r8, r20, r7		;elemento
