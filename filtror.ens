@@ -46,7 +46,7 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;IMAGEN:
 ;		data    4, 3
 ;		data    0x40302010, 0x80706050, 0xC0B0A090
-
+org 0x8000
 ;SUBIMAGEN:
 ;		data    0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 ;SUBIMAGEN:
@@ -55,12 +55,21 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;		data    4, 5, 6
 ;		data    7, 8, 9
 
-SUBIMAGEN:
-		data    0x00000000, 0x00000055, 0x00
-FILTRO: 	data    0, 0, 0
-		data    0, -2, 0
-		data    0, 0, 0
+;SUBIMAGEN:
+;		data    0x00000000, 0x00000055, 0x00
+;FILTRO: 	data    0, 0, 0
+;		data    0, -2, 0
+;		data    0, 0, 0
 
+IMAGEN:
+		data    4, 8
+		data    0x44444444, 0x44444444
+		data    0x33343444, 0x44444444
+		data    0x44884444, 0x44444444
+		data    0x44444444, 0x44444444
+FILTRO:	 	data    1, 1, 1
+		data    1, 0, 1
+		data    1, 1, 1
 
 ;-----PROGRAMA PRINCIPAL------
 
@@ -119,6 +128,18 @@ org 1000
 ;		PUSH(r3)
 ;		bsr ValorPixel
 ;		stop
+
+PPAL6:		LEA(r30, 36848)
+		LEA(r2, FILTRO)
+		LEA(r3, IMAGEN)
+		addu r4, r0, 3
+		addu r6, r0, 3
+		PUSH(r2)
+		PUSH(r4)
+		PUSH(r6)
+		PUSH(r3)
+		bsr FilPixel
+		stop
 		
 ;---------SUBRUTINAS----------
 
@@ -197,7 +218,9 @@ SubMatriz:	PUSH(r1)
 		ld r23, r30, 4		;Direccion Imagen
 		ld r22, r30, 8		;Dir SubImagen
 		ld r20, r30, 12		;i
+		subu r20, r20, 1
 		ld r21, r30, 16		;j
+		subu r21, r21, 1
 		ld r24, r23, 0		;M
 		ld r25, r23, 4		;N
 		addu r26, r23, 8	;Direccion primer elemento Imagen
@@ -249,15 +272,17 @@ ValorPixel:	PUSH(r1)
 		or r2, r0, 0		;Acc
 		ld r20, r30, 4		;Puntero SubImg
 		ld r21, r30, 8		;Puntero MFiltro
-		addu r3, r0, 8		;Contador
-		addu r15, r0, 32
-BUCVAL:		ld.bu r22, r20, r3	;elemento SubImg
-		ld r23, r21, r15	;elemento MFiltro
+		addu r3, r0, 0		;Contador
+BUCVAL:		cmp r5, r3, 9
+		bb1 eq, r5, FINVALP		
+		ld.bu r22, r20, r3	;elemento SubImg
+		ld r23, r21, r0		;elemento MFiltro
 		muls r4, r22, r23	;elementoSubImgxelementoMFiltro
 		addu r2, r2, r4		;acumulo resultado
-		subu r15, r15, 4
-		DBNZ(r3, BUCVAL)
-		or r29, r2, 0
+		addu r3, r3, 1
+		addu r21, r21, 4
+		br BUCVAL
+FINVALP:	or r29, r2, 0
 		POP(r1)
 		jmp(r1)
 
@@ -265,11 +290,11 @@ BUCVAL:		ld.bu r22, r20, r3	;elemento SubImg
 FilPixel:	PUSH(r1)
 		PUSH(r31)
 		or r31, r30, 0
-		subu r31, r31, 12	;Reserva 3x4 Subimg
-		ld r21, r30, 4		;DirIm
-		ld r3, r30, 8		;i
-		ld r2, r30, 12		;j
-		ld r20, r30, 16		;DirMF
+		subu r30, r31, 12	;Reserva 3x4 Subimg
+		ld r21, r31, 8		;DirIm
+		ld r3, r31, 12		;i
+		ld r2, r31, 16		;j
+		ld r20, r31, 20		;DirMF
 		or r4, r30, r0		;DirSubImg
 ;		----------------------------------------
 		PUSH(r2)
@@ -279,19 +304,25 @@ FilPixel:	PUSH(r1)
 		bsr SubMatriz
 ;		----------------------------------------
 		subu r30, r31, 12	;Puntero de pila en variables locales
-		ld r4, r30, 0		;SubMatriz
+		ld r20, r31, 20		;DirMF
+		or r4, r30, 0		;SubImg
 		PUSH(r20)
 		PUSH(r4)
 		bsr ValorPixel
 ;		----------------------------------------
 		or r6, r0, r0		;acumulador=0
-		addu r7, r0, 8		;contador DBNZ
-PESO:		ld r8, r20, r7		;elemento
-		add r6, r8, r6		;acumulador+elemento
-		DBNZ(r7, PESO)
-		cmp r9, r6, r0		;acumulador=?0
+		addu r7, r0, 0		;contador
+		ld r20, r31, 20		;vuelvo a cargar la dirMF por si se machaca en subrutina
+PESO:		cmp r5, r7, 9
+		bb1 eq, r5, CONTI
+		ld r8, r20, r0 		;elemento
+		addu r6, r6, r8		;acumulador+elemento
+		addu r7, r7, 1
+		addu r20, r20, 4
+		br PESO
+CONTI:		cmp r9, r6, r0		;acumulador=?0
 		bb1 eq, r9, COMPAR	
-		divs r29, r24, r6	
+		divs r29, r29, r6	
 COMPAR:		cmp r9, r29, 0		;r29<?0
 		bb1 lt, r9, MENOR
 		cmp r9, r29, 255	;r29>?255
