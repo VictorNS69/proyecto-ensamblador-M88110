@@ -66,7 +66,7 @@ FILTRO: 	data    0, 0, 0
 
 org 1000
 
-PPAL1:		LEA(r30,50000)	
+;PPAL1:		LEA(r30,50000)	
 ;		Test nfiltrados con oper=0
 ;		PUSH(r0)		
 ;		bsr nFiltrados
@@ -112,13 +112,13 @@ PPAL1:		LEA(r30,50000)
 ;		bsr SubMatriz
 ;		stop	
 
-PPAL5:		LEA(r30, 50000)
-		LEA(r2, FILTRO)
-		LEA(r3, SUBIMAGEN)
-		PUSH(r2)
-		PUSH(r3)
-		bsr ValorPixel
-		stop
+;PPAL5:		LEA(r30, 50000)
+;		LEA(r2, FILTRO)
+;		LEA(r3, SUBIMAGEN)
+;		PUSH(r2)
+;		PUSH(r3)
+;		bsr ValorPixel
+;		stop
 		
 ;---------SUBRUTINAS----------
 
@@ -252,17 +252,58 @@ ValorPixel:	PUSH(r1)
 		addu r3, r0, 8		;Contador
 		addu r15, r0, 32
 BUCVAL:		ld.bu r22, r20, r3	;elemento SubImg
-		ld r23, r21, r15		;elemento MFiltro
+		ld r23, r21, r15	;elemento MFiltro
 		muls r4, r22, r23	;elementoSubImgxelementoMFiltro
 		addu r2, r2, r4		;acumulo resultado
 		subu r15, r15, 4
 		DBNZ(r3, BUCVAL)
 		or r29, r2, 0
-		PUSH(r1)
+		POP(r1)
 		jmp(r1)
 
 ;------------FILPIXEL--------------------
-FilPixel:	add r0, r0, r0	
+FilPixel:	PUSH(r1)
+		PUSH(r31)
+		or r31, r30, 0
+		subu r31, r31, 12	;Reserva 3x4 Subimg
+		ld r21, r30, 4		;DirIm
+		ld r3, r30, 8		;i
+		ld r2, r30, 12		;j
+		ld r20, r30, 16		;DirMF
+		or r4, r30, r0		;DirSubImg
+;----------------------------------------
+		PUSH(r2)
+		PUSH(r3)
+		PUSH(r4)
+		PUSH(r21)
+		bsr SubMatriz
+;----------------------------------------
+		subu r30, r31, 12	;Puntero de pila en variables locales
+		ld r4, r30, 0		;SubMatriz
+		PUSH(r20)
+		PUSH(r4)
+		bsr ValorPixel
+;----------------------------------------
+		or r6, r0, r0		;acumulador=0
+		addu r7, r0, 8		;contador DBNZ
+PESO:		ld r8, r20, r7		;elemento
+		add r6, r8, r6		;acumulador+elemento
+		DBNZ(r7, PESO)
+		cmp r9, r6, r0		;acumulador=?0
+		bb1 eq, r9, COMPAR	
+		divs r29, r24, r6	
+COMPAR:		cmp r9, r29, 0		;r29<?0
+		bb1 lt, r9, MENOR
+		cmp r9, r29, 255	;r29>?255
+		bb1 gt, r9, MAYOR		
+		br FINFILP
+MENOR:		addu r29, r0, r0
+		br FINFILP
+MAYOR:		add r29, r0, 255
+FINFILP:	or r30, r31, r0
+		POP(r31)
+		POP(r1)
+		jmp(r1)
 
 ;------------FILTRO--------------------
 Filtro:		add r0, r0, r0	
