@@ -46,7 +46,7 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;IMAGEN:
 ;		data    4, 3
 ;		data    0x40302010, 0x80706050, 0xC0B0A090
-org 0x8000
+
 ;SUBIMAGEN:
 ;		data    0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 ;SUBIMAGEN:
@@ -129,17 +129,17 @@ org 1000
 ;		bsr ValorPixel
 ;		stop
 
-PPAL6:		LEA(r30, 36848)
-		LEA(r2, FILTRO)
-		LEA(r3, IMAGEN)
-		addu r4, r0, 3
-		addu r6, r0, 3
-		PUSH(r2)
-		PUSH(r4)
-		PUSH(r6)
-		PUSH(r3)
-		bsr FilPixel
-		stop
+;PPAL6:		LEA(r30, 36848)
+;		LEA(r2, FILTRO)
+;		LEA(r3, IMAGEN)
+;		addu r4, r0, 3
+;		addu r6, r0, 3
+;		PUSH(r2)
+;		PUSH(r4)
+;		PUSH(r6)
+;		PUSH(r3)
+;		bsr FilPixel
+;		stop
 		
 ;---------SUBRUTINAS----------
 
