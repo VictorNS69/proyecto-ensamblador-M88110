@@ -33,7 +33,7 @@ org 0
 
 nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo de 32 bits
 
-		org 0x8000
+;		org 0x8000
 
 ;IM1:		data 2, 2
 ;		data 0x04030201
@@ -71,16 +71,16 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;SUBIMAGEN:
 ;		data 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 
-IMAGEN:
-		data    4, 8
-		data    0x44444444, 0x44444444
-		data    0x33343444, 0x44444444
-		data    0x44884444, 0x44444444
-		data    0x44444444, 0x44444444
+;IMAGEN:
+;		data    4, 8
+;		data    0x44444444, 0x44444444
+;		data    0x33343444, 0x44444444
+;		data    0x44884444, 0x44444444
+;		data    0x44444444, 0x44444444
 
-FILTRO:	 	data    1, 1, 1
-		data    1, 0, 1
-		data    1, 1, 1
+;FILTRO:	 	data    1, 1, 1
+;		data    1, 0, 1
+;		data    1, 1, 1
 
 ;IMAGEN:
 ;		data    5, 5
@@ -159,17 +159,17 @@ org 1000
 ;		bsr ValorPixel
 ;		stop
 
-PPAL6:		LEA(r30, 50000)
-		LEA(r2, FILTRO)
-		LEA(r3, IMAGEN)
-		addu r4, r0, 2
-		addu r6, r0, 2
-		PUSH(r2)
-		PUSH(r4)
-		PUSH(r6)
-		PUSH(r3)
-		bsr FilPixel
-		stop
+;PPAL6:		LEA(r30, 50000)
+;		LEA(r2, FILTRO)
+;		LEA(r3, IMAGEN)
+;		addu r4, r0, 2
+;		addu r6, r0, 2
+;		PUSH(r2)
+;		PUSH(r4)
+;		PUSH(r6)
+;		PUSH(r3)
+;		bsr FilPixel
+;		stop
 		
 ;---------SUBRUTINAS----------
 
