@@ -18,3 +18,7 @@
 	Realizamos entrega adicional del segundo hito.
 	Tiempo total de trabajo: 5 horas aprox.
 	
+13/11/2018
+	Corregimos un pequeño fallo en submatriz. 
+	Realizamos una entrega para el hito del día 16.
+	Tiempo total de trabajo: 1'30 horas.
