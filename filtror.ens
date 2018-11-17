@@ -63,20 +63,22 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;		data    0, -2, 0
 ;		data    0, 0, 0
 
+;		org 0x8000
 ;IMAGEN:
 ;		data 3, 3
 ;		data 0x40302010, 0x80706050, 0x90
 
-;		org 0x8040
-;SUBIMAGEN:
-;		data 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
-
-;IMAGEN:
-;		data    4, 8
-;		data    0x44444444, 0x44444444
-;		data    0x33343444, 0x44444444
-;		data    0x44884444, 0x44444444
-;		data    0x44444444, 0x44444444
+		org 0x8040
+SUBIMAGEN:
+		data 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+		
+		org 0x8000
+IMAGEN:
+		data    4, 8
+		data    0x44444444, 0x44444444
+		data    0x33343444, 0x44444444
+		data    0x44884444, 0x44444444
+		data    0x44444444, 0x44444444
 
 ;FILTRO:	 	data    1, 1, 1
 ;		data    1, 0, 1
@@ -140,16 +142,17 @@ org 1000
 ;		bsr ActualizaFiltro
 ;		stop
 
-;PPAL4:		LEA(r30, 50000)
-;		LEA(r2, IMAGEN)
-;		LEA(r3, SUBIMAGEN)
-;		addu r4, r0, 3
-;		PUSH(r0)
-;		PUSH(r4)
-;		PUSH(r3)
-;		PUSH(r2)
-;		bsr SubMatriz
-;		stop	
+PPAL4:		LEA(r30, 50000)
+		LEA(r2, IMAGEN)
+		LEA(r3, SUBIMAGEN)
+		addu r4, r0, 7
+		PUSH(r4)
+		addu r4, r0, 2
+		PUSH(r4)
+		PUSH(r3)
+		PUSH(r2)
+		bsr SubMatriz
+		stop	
 
 ;PPAL5:		LEA(r30, 50000)
 ;		LEA(r2, FILTRO)
@@ -257,13 +260,13 @@ SubMatriz:	PUSH(r1)
 		mulu r2, r24, r25	;MxN
 		subu r24, r24, 1	;M-1
 		subu r25, r25, 1	;N-1
-		cmp r3, r20, r0		;i=?0
+		cmp r3, r21, r0		;#i=?0
 		bb1 eq, r3, BORDE	
-		cmp r3, r21, r0		;j=?0
+		cmp r3, r20, r0		;#j=?0
 		bb1 eq, r3, BORDE
-		cmp r3, r20, r24	;i=?M-1
+		cmp r3, r21, r24	;#i=?M-1
 		bb1 eq, r3, BORDE
-		cmp r3, r21, r25	;j=?N-1
+		cmp r3, r20, r25	;#j=?N-1
 		bb1 eq, r3, BORDE
 NOBORDE:	addu r25, r25, 1	;N principio
 		addu r24, r24, 1	;#M principio
