@@ -68,17 +68,18 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;		data 3, 3
 ;		data 0x40302010, 0x80706050, 0x90
 
-		org 0x8040
-SUBIMAGEN:
-		data 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+;		org 0x8040
+;SUBIMAGEN:
+;		data 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 		
-		org 0x8000
-IMAGEN:
-		data    4, 8
-		data    0x44444444, 0x44444444
-		data    0x33343444, 0x44444444
-		data    0x44884444, 0x44444444
-		data    0x44444444, 0x44444444
+;		org 0x8000
+;IMAGEN:
+;		data    5, 8
+;		data    0x04030201, 0x08070605
+;		data    0x0C0B0A09, 0x100F0E0D
+;		data    0x14131211, 0x18171615
+;		data    0x1C1B1A19, 0x201F1E1D
+;		data    0x24232221, 0x28272625
 
 ;FILTRO:	 	data    1, 1, 1
 ;		data    1, 0, 1
@@ -102,6 +103,32 @@ IMAGEN:
 ;		data 	0x0C0B0A09, 0x100F0E0D
 ;		data	0x14131211, 0x18171615
 ;		data	0x00000019
+
+;		org 0x8000
+;IMAGEN:
+;		data    4, 8
+;		data    0x04030201, 0x07060504
+;		data    0x14134211, 0x17168514
+;		data    0x24232221, 0x27262574
+;		data    0x34333231, 0x37363534
+;FILTRADA:
+;		res     40
+;FILTRO: 	data    0, -3, 0
+;		data    0,  4, 0
+;		data    0,  0, 0	
+
+		org 0x8000
+IMAGEN:
+		data    4, 6
+		data    0x04030201, 0x02000605
+		data    0x05030104, 0x0C090603
+		data    0x0804120F, 0x80402010
+FILTRADA:	res     40
+FILTRO: 	data    0xFFFFFFFE, 0, 0xFFFFFFFE
+		data    0, 	    0, 0
+		data    0xFFFFFFFE, 0, 0xFFFFFFFE	
+
+
 
 ;-----PROGRAMA PRINCIPAL------
 
@@ -142,17 +169,17 @@ org 1000
 ;		bsr ActualizaFiltro
 ;		stop
 
-PPAL4:		LEA(r30, 50000)
-		LEA(r2, IMAGEN)
-		LEA(r3, SUBIMAGEN)
-		addu r4, r0, 7
-		PUSH(r4)
-		addu r4, r0, 2
-		PUSH(r4)
-		PUSH(r3)
-		PUSH(r2)
-		bsr SubMatriz
-		stop	
+;PPAL4:		LEA(r30, 50000)
+;		LEA(r2, IMAGEN)
+;		LEA(r3, SUBIMAGEN)
+;		addu r4, r0, 1
+;		PUSH(r4)
+;		addu r6, r0, 3
+;		PUSH(r6)
+;		PUSH(r3)
+;		PUSH(r2)
+;		bsr SubMatriz
+;		stop	
 
 ;PPAL5:		LEA(r30, 50000)
 ;		LEA(r2, FILTRO)
@@ -173,8 +200,21 @@ PPAL4:		LEA(r30, 50000)
 ;		PUSH(r3)
 ;		bsr FilPixel
 ;		stop
-		
-;---------SUBRUTINAS----------
+
+
+PPAL7:
+		LEA(r30, 5000)
+		LEA(r2, IMAGEN)
+		LEA(r3, FILTRADA)
+		LEA(r4, FILTRO)
+		PUSH(r4)
+		PUSH(r3)
+		PUSH(r2)
+		bsr Filtro
+		stop
+
+
+;||||||||-SUBRUTINAS-|||||||||
 
 ;---------NFILTRADOS----------
 nFiltrados:	PUSH(r1)
@@ -270,9 +310,9 @@ SubMatriz:	PUSH(r1)
 		bb1 eq, r3, BORDE
 NOBORDE:	addu r25, r25, 1	;N principio
 		addu r24, r24, 1	;#M principio
-		subu r20, r20, 1	;i-1
-		subu r21, r21, 1	;j-1
-		mulu r4, r21, r25	;Nxj
+		subu r21, r21, 1	;i-1
+		subu r20, r20, 1	;j-1
+		mulu r4, r21, r25	;Nxi
 		addu r4, r4, r20	;desplazamiento para ij
 		addu r27, r26, r4	;puntero a Im(ij)
 		addu r7, r0, 3		;contador elementos
@@ -291,7 +331,7 @@ BUCNOBOR:	ld.bu r28, r27, r9	;elemento a r28
 		br FINSUB
 BORDE:		addu r25, r25, 1	;N principio
 		;addu r24, r24, 1	;#M principio
-		mulu r4, r24, r25	;Nx(j-1)
+		mulu r4, r21, r25	;Nxi
 		addu r4, r4, r20	;ij
 		ld.bu r27, r26, r4	;Imagen(ij)
 		addu r6, r0, 9		;#ContadorDBNZ=9
@@ -372,8 +412,54 @@ FINFILP:	or r30, r31, r0
 		jmp(r1)
 
 ;------------FILTRO--------------------
-Filtro:		add r0, r0, r0	
-
+Filtro:		PUSH(r1)
+		PUSH(r31)
+		or r31, r30, r0
+		ld r20, r31, 8 		;Imagen
+		ld r21, r31, 12		;ImFiltrada
+		ld r22, r31, 16		;MFiltro
+		ld r23, r20, 0		;M
+		ld r24, r20, 4		;N
+		st r23, r21, 0		;M->ImFiltrada
+		st r24, r21, 4		;N->ImFiltrada
+		addu r2, r0, 0		;i
+		addu r3, r0, 0		;j
+		addu r4, r0, 0		;Contador ImFiltrada
+		;addu r6, r21, 8		;Primer elemento ImFiltrada
+		PUSH(r23)		;M
+		PUSH(r24)		;N
+		PUSH(r4)		;Contador
+		br BUF2
+BUF1:		addu r2, r2, 1		;i++
+		addu r3, r0, 0		;j=0
+		cmp r5, r2, r23		;i=?M
+		bb1 eq, r5, FINFILT
+BUF2:		PUSH(r22)		;MFiltro
+		PUSH(r3)		;j
+		PUSH(r2)		;i
+		PUSH(r20)		;Imagen
+		bsr FilPixel
+		POP(r20)
+		POP(r2)
+		POP(r3)
+		POP(r22)
+		ld r4, r30, 0		;Recupero contador
+		ld r24, r30, 4		;Recupero N
+		ld r23, r30, 8		;Recupero M
+		ld r21, r30, 24		;ImFiltrada
+		addu r21, r21, 8	;Primer elemento ImFiltrada
+		st.b r29, r21, r4	;Almaceno pixel filtrado en ImFiltrada
+		addu r4, r4, 1		;contador++
+		addu r3, r3, 1		;j++
+		st r4, r30, 0		;Guardo contador
+		cmp r5, r3, r24		;j=?N
+		bb1 eq, r5, BUF1
+		br BUF2
+FINFILT:	or r30, r31, 0		;Destruyo el marco de pila
+		POP(r31)
+		POP(r1)
+		jmp(r1)
+				
 ;------------FILTREC--------------------
 FiltRec:	add r0, r0, r0	
 
