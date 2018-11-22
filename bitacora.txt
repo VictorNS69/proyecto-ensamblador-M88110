@@ -22,3 +22,12 @@
 	Corregimos un pequeño fallo en SubMatriz. 
 	Realizamos una entrega para el segundo hito.
 	Tiempo total de trabajo: 1'30 horas.
+
+20/11/2018
+	Falló una prueba en submatriz.
+	Se volvio a corregir SubMatriz. Además se realizó la subrutina Filtro.
+	No se realizó ninguna entrega.
+	Tiempo de trabajo: 3'30 horas.
+
+22/11/2018
+	
