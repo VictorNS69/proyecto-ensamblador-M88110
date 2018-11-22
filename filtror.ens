@@ -129,6 +129,16 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;		data    0xFFFFFFFE, 0, 0xFFFFFFFE	
 
 
+	org 0x8000
+IMAGEN:
+	data 4, 4
+	data 0x04030201, 0x0D0E0F10, 0x05040302, 0x23222120
+DUPLA: 	data 1, 1
+FILTRO: data 1, 1, 1
+	data 1, 0, 1
+	data 1, 1, 1
+FILTRADA: res 24
+	data 0xAAAAAAAA, 0xAAAAAAAA
 
 ;--------------------------PROGRAMA PRINCIPAL---------------------------------
 
@@ -213,6 +223,24 @@ org 1000
 ;		bsr Filtro
 ;		stop
 
+
+PPAL8:
+;		Imagen dupla filtro filtrada
+		addu r10, r0, 4		;nf
+		st r10, r0, 0
+		LEA(r30, 5000)
+		LEA(r2, IMAGEN) 
+		LEA(r3, DUPLA)
+		LEA(r4, FILTRO)
+		LEA(r5, FILTRADA)
+		addu r11, r0, 40	;ncambios
+		PUSH(r11)
+		PUSH(r3)
+		PUSH(r4)
+		PUSH(r5)
+		PUSH(r2)
+		bsr FiltRec
+		stop
 ;---------------------------SUBRUTINAS-----------------------------------
 
 ;---------NFILTRADOS----------
@@ -461,7 +489,7 @@ FINFILT:	or r30, r31, 0		;Destruyo el marco de pila
 FiltRec:	PUSH(r1)
 		PUSH(r31)
 		or r30, r31, 0
-		ld r2, r31, 4		;ImagenIn
+		ld r2, r31, 8		;ImagenIn
 		ld r3, r2, 0		;M
 		ld r4, r2, 4		;N
 		mulu r6, r3, r4		;MxN
@@ -471,8 +499,8 @@ BUCRES:		extu r7, r6, 2<0>	;Extraigo los dos primeros bits de MxN
 		br BUCRES
 PROG:		addu r6, r6, 8		;MxN+4+4
 		subu r30, r31, r6	;Reserva para ImTmp
-		ld r7, r31, 8		;ImOut
-		ld r8, r31, 12		;MFiltro
+		ld r7, r31, 12		;ImOut
+		ld r8, r31, 16		;MFiltro
 ;		-----------------------
 		PUSH(r8)
 		PUSH(r7)
