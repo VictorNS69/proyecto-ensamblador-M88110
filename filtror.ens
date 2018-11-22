@@ -213,7 +213,6 @@ org 1000
 ;		bsr Filtro
 ;		stop
 
-
 ;---------------------------SUBRUTINAS-----------------------------------
 
 ;---------NFILTRADOS----------
@@ -459,9 +458,73 @@ FINFILT:	or r30, r31, 0		;Destruyo el marco de pila
 		jmp(r1)
 				
 ;------------FILTREC--------------------
-FiltRec:	add r0, r0, r0	
-
-
+FiltRec:	PUSH(r1)
+		PUSH(r31)
+		or r30, r31, 0
+		ld r2, r31, 4		;ImagenIn
+		ld r3, r2, 0		;M
+		ld r4, r2, 4		;N
+		mulu r6, r3, r4		;MxN
+BUCRES:		extu r7, r6, 2<0>	;Extraigo los dos primeros bits de MxN
+		cmp r5, r7, r0		;Multiplos4?
+		bb1 eq, r5, PROG
+		br BUCRES
+PROG:		addu r6, r6, 8		;MxN+4+4
+		subu r30, r31, r6	;Reserva para ImTmp
+		ld r7, r31, 8		;ImOut
+		ld r8, r31, 12		;MFiltro
+;		-----------------------
+		PUSH(r8)
+		PUSH(r7)
+		PUSH(r2)
+		bsr Filtro
+		POP(r2)
+		POP(r7)
+		POP(r8)
+;		-----------------------
+		ld r9, r31, 20		;ModMFiltro
+		PUSH(r9)
+		PUSH(r8)
+		bsr ActualizaFiltro
+		POP(r8)
+		POP(r9)
+;		-----------------------
+		st r7, r30, 0		;Guardamos ImOut en espacio reservado para ImTmp
+;		-----------------------
+		subu r11, r0, 1		;oper<0
+		PUSH(r11)
+		bsr nFiltrados
+		POP(r11)
+		cmp r5, r29, 0
+		bb1 eq, r5, NFN		
+;		-----------------------
+		PUSH(r7)
+		PUSH(r2)
+		bsr Comp
+		POP(r2)
+		POP(r7)
+		ld r10, r31, 24		;NCambios
+		cmp r5, r29, r10
+		bb1 lt, r5, FINFR
+;		-----------------------
+		PUSH(r10)
+		PUSH(r9)
+		PUSH(r8)
+		PUSH(r7)
+		PUSH(r2)
+		bsr FiltRec
+		POP(r2)
+		POP(r7)
+		POP(r8)
+		POP(r9)
+		POP(r10)
+		br FINFR
+;		-----------------------
+NFN:		subu r29, r0, 1
+FINFR:		or r30, r31, 0
+		POP(r31)
+		POP(r1)
+		jmp(r1)
 
 
 
