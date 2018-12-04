@@ -29,9 +29,9 @@ POP:    MACRO  (reg)
         ENDMACRO
 
 ;-------------------------------DATOS-------------------------------------
-org 0
+;org 0
 
-nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo de 32 bits
+;nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo de 32 bits
 
 ;		org 0x8000
 
@@ -44,18 +44,22 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;		data 2, 0, 2
 ;		data 2, 2, 2
 ;MODMFILTRO: 	data 1, 2
-
+		
+;		org 0x8000
 ;IMAGEN:
-;		data    4, 3
-;		data    0x40302010, 0x80706050, 0xC0B0A090
+;		data    3, 3
+;		data    0x40302010, 0x80706050, 0x90
+;FILTRO: 	data    0, 0, 0
+;		data    0, 1, 0
+;		data    0, 0, 0
 
 ;SUBIMAGEN:
 ;		data    0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 ;SUBIMAGEN:
 ;		data    0x40302010, 0x80706050, 0x90
-;FILTRO: 	data    1, 2, 3
-;		data    4, 5, 6
-;		data    7, 8, 9
+;FILTRO: 	data    0, 0, 0
+;		data    0, 1, 0
+;		data    0, 0, 0
 
 ;SUBIMAGEN:
 ;		data    0x00000000, 0x00000055, 0x00
@@ -67,7 +71,7 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;IMAGEN:
 ;		data 3, 3
 ;		data 0x40302010, 0x80706050, 0x90
-
+;
 ;		org 0x8040
 ;SUBIMAGEN:
 ;		data 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
@@ -104,18 +108,15 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;		data	0x14131211, 0x18171615
 ;		data	0x00000019
 
-;		org 0x8000
-;IMAGEN:
-;		data    4, 8
-;		data    0x04030201, 0x07060504
-;		data    0x14134211, 0x17168514
-;		data    0x24232221, 0x27262574
-;		data    0x34333231, 0x37363534
-;FILTRADA:
-;		res     40
-;FILTRO: 	data    0, -3, 0
-;		data    0,  4, 0
-;		data    0,  0, 0	
+		org 0x8000
+IMAGEN:
+		data    3,3
+		data    0x04030201, 0x08070605, 0x90
+FILTRADA:
+		res     20
+FILTRO: 	data    0, 0, 0
+		data    0, 1, 0
+		data    0, 0, 0	
 
 ;		org 0x8000
 ;IMAGEN:
@@ -150,12 +151,12 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;	data 1, 1, 1
 ;FILTRADA: res 24
 ;	data 0xAAAAAAAA, 0xAAAAAAAA
-;
+
 ;	org   0x8000
 ;IMAGEN:     	data  4, 8
 ;		data  0xFF0201FF, 0xFF0403FF
-;		data  0xFF0506FF, 0xFF0708FF
-;		data  0xFF0506FF, 0xFF0708FF
+;		data  0xFF0605FF, 0xFF0807FF
+;		data  0xFF0605FF, 0xFF0807FF
 ;		data  0xFF0201FF, 0xFF0403FF
 ;FILTRO:     	data  1, 1, 1
 ;		data  1, 0, 1
@@ -163,6 +164,17 @@ nF: 		res 4			;Reservo espacio para la variable nF, que es un entero sin signo d
 ;DUPLA:     	data  4, 2
 ;	org   0x8100
 ;FILTRADA: 	res   40
+
+;	org   0x8000
+;IMAGEN:		data 3, 3
+;		data 0x04030201, 0x08070605, 0x09000000
+;FILTRO:		data 0, 0, 0
+;		data 0, 1, 0
+;		data 0, 0, 0
+;DUPLA:		data 1, 1
+;	org 0x8100
+;FILTRADA: 	res 20
+;		data 0xAAAAAAAA, 0xAAAAAAAA
 
 ;--------------------------PROGRAMA PRINCIPAL---------------------------------
 
@@ -208,7 +220,7 @@ org 1000
 ;		LEA(r3, SUBIMAGEN)
 ;		addu r4, r0, 1
 ;		PUSH(r4)
-;		addu r6, r0, 3
+;		addu r6, r0, 1
 ;		PUSH(r6)
 ;		PUSH(r3)
 ;		PUSH(r2)
@@ -236,28 +248,28 @@ org 1000
 ;		stop
 
 
-;PPAL7:
-;		LEA(r30, 5000)
-;		LEA(r2, IMAGEN)
-;		LEA(r3, FILTRADA)
-;		LEA(r4, FILTRO)
-;		PUSH(r4)
-;		PUSH(r3)
-;		PUSH(r2)
-;		bsr Filtro
-;		stop
+PPAL7:
+		LEA(r30, 5000)
+		LEA(r2, IMAGEN)
+		LEA(r3, FILTRADA)
+		LEA(r4, FILTRO)
+		PUSH(r4)
+		PUSH(r3)
+		PUSH(r2)
+		bsr Filtro
+		stop
 
 ;org 0x8400
 ;PPAL8:		
-;		Imagen dupla filtro filtrada
-;		addu r10, r0, 4		;nf
+;					;Imagen dupla filtro filtrada
+;		addu r10, r0, 3		;nf
 ;		st r10, r0, 0
-;		LEA(r30, 50000)
+;		LEA(r30, 36840)
 ;		LEA(r2, IMAGEN) 
 ;		LEA(r3, DUPLA)
 ;		LEA(r4, FILTRO)
 ;		LEA(r5, FILTRADA)
-;		or r11, r0, 0	;ncambios
+;		addu r11, r0, 0		;ncambios
 ;		PUSH(r11)
 ;		PUSH(r3)
 ;		PUSH(r4)
@@ -500,7 +512,7 @@ BUF2:		PUSH(r22)		;MFiltro
 		st.b r29, r21, r4	;Almaceno pixel filtrado en ImFiltrada
 		addu r4, r4, 1		;contador++
 		addu r3, r3, 1		;j++
-		st r4, r30, 0		;Guardo contador
+		st r4, r30, 0		;Guardo qcontador
 		cmp r5, r3, r24		;j=?N
 		bb1 eq, r5, BUF1
 		br BUF2
@@ -516,15 +528,15 @@ FiltRec:	PUSH(r1)
 		ld r2, r31, 8		;ImagenIn
 		ld r3, r2, 0		;M
 		ld r4, r2, 4		;N
-		mulu r6, r3, r4		;MxN
-BUCRES:		extu r7, r6, 2<0>	;Extraigo los dos primeros bits de MxN
+		mulu r19, r3, r4	;MxN
+BUCRES:		extu r7, r19, 2<0>	;Extraigo los dos primeros bits de MxN
 		cmp r5, r7, r0		;Multiplos4?
 		bb1 eq, r5, PROG
+		addu r19, r19, 1
 		br BUCRES
-PROG:		addu r6, r6, 8		;MxN+4+4
+PROG:		addu r19, r19, 8		;MxN+4+4
 
-		subu r30, r31, r6	;Reserva para ImTmp
-		PUSH(r6)		;#Guardo MxN+4+4 para la recuperacion mas tarde
+		subu r30, r31, r19	;Reserva para ImTmp
 		ld r7, r31, 12		;ImOut
 		ld r8, r31, 16		;MFiltro
 ;		-----------------------
@@ -536,26 +548,24 @@ PROG:		addu r6, r6, 8		;MxN+4+4
 		POP(r7)
 		POP(r8)
 ;		-----------------------
-M:		ld r9, r31, 20		;ModMFiltro
+R1:		ld r9, r31, 20		;ModMFiltro
 		PUSH(r9)
 		PUSH(r8)
 		bsr ActualizaFiltro
 		POP(r8)
 		POP(r9)
+
 ;		-----------------------
-		ld r6, r30, 0		;#Recupero MxN+4+4 para guardar ImOut en espacio de ImTmp
-		addu r21, r0, 0		;contador
-		addu r23, r0, 4
+R2:		addu r21, r0, 0		;contador
 		
 BUCCOPIA:	ld r20, r7, r21		;carga palabra de ImOut
-		st r20, r30, r23	;Guardo palabra de ImOut en espacio de ImTmp
-		addu r21, r21, 4
-		addu r23, r23, 4	
-		cmp r5, r21, r6		;compruebo si he copiado todas las palabras de ImOut
+		st r20, r30, r21	;Guardo palabra de ImOut en espacio de ImTmp
+		addu r21, r21, 4	
+		cmp r5, r21, r19	;compruebo si he copiado todas las palabras de ImOut
 		bb1 eq, r5, CONTFR
 		br BUCCOPIA
 ;		-----------------------
-CONTFR:		POP(r6)
+CONTFR:		;POP(r6)
 		subu r11, r0, 1		;oper<0
 		PUSH(r11)
 		bsr nFiltrados
@@ -563,27 +573,27 @@ CONTFR:		POP(r6)
 		cmp r5, r29, 0
 		bb1 eq, r5, NFN		
 ;		-----------------------
+R3:		
+		ld r2, r31, 8		
 		PUSH(r7)
 		PUSH(r2)
 		bsr Comp
-		POP(r2)
+R29:		POP(r2)
 		POP(r7)
 		ld r10, r31, 24		;NCambios
 		cmp r5, r29, r10
 		bb1 lt, r5, FINFR
 ;		-----------------------
-P:		or r2, r30, 0		;R2 = TMP
+R4:		
+		ld r8, r31, 16		;MFILTRO
+		ld r9, r31, 20		;MODMFILTRO
+		or r2, r30, 0		;R2 = TMP
 		PUSH(r10)
 		PUSH(r9)
 		PUSH(r8)
 		PUSH(r7)
 		PUSH(r2)
 		bsr FiltRec
-		POP(r2)
-		POP(r7)
-		POP(r8)
-		POP(r9)
-		POP(r10)
 		br FINFR
 ;		-----------------------
 NFN:		subu r29, r0, 1
