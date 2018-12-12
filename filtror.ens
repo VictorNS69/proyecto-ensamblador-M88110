@@ -108,15 +108,15 @@ POP:    MACRO  (reg)
 ;		data	0x14131211, 0x18171615
 ;		data	0x00000019
 
-		org 0x8000
-IMAGEN:
-		data    3,3
-		data    0x04030201, 0x08070605, 0x90
-FILTRADA:
-		res     20
-FILTRO: 	data    0, 0, 0
-		data    0, 1, 0
-		data    0, 0, 0	
+;		org 0x8000
+;IMAGEN:
+;		data    3,3
+;		data    0x04030201, 0x08070605, 0x90
+;FILTRADA:
+;		res     20
+;FILTRO: 	data    0, 0, 0
+;		data    0, 1, 0
+;		data    0, 0, 0	
 
 ;		org 0x8000
 ;IMAGEN:
@@ -152,18 +152,18 @@ FILTRO: 	data    0, 0, 0
 ;FILTRADA: res 24
 ;	data 0xAAAAAAAA, 0xAAAAAAAA
 
-;	org   0x8000
-;IMAGEN:     	data  4, 8
-;		data  0xFF0201FF, 0xFF0403FF
-;		data  0xFF0605FF, 0xFF0807FF
-;		data  0xFF0605FF, 0xFF0807FF
-;		data  0xFF0201FF, 0xFF0403FF
-;FILTRO:     	data  1, 1, 1
-;		data  1, 0, 1
-;		data  1, 1, 1
-;DUPLA:     	data  4, 2
-;	org   0x8100
-;FILTRADA: 	res   40
+	org   0x8000
+IMAGEN:     	data  4, 8
+		data  0xFF0201FF, 0xFF0403FF
+		data  0xFF0605FF, 0xFF0807FF
+		data  0xFF0605FF, 0xFF0807FF
+		data  0xFF0201FF, 0xFF0403FF
+FILTRO:     	data  1, 1, 1
+		data  1, 0, 1
+		data  1, 1, 1
+DUPLA:     	data  4, 2
+	org   0x8100
+FILTRADA: 	res   40
 
 ;	org   0x8000
 ;IMAGEN:		data 3, 3
@@ -259,24 +259,24 @@ PPAL7:
 		bsr Filtro
 		stop
 
-;org 0x8400
-;PPAL8:		
-;					;Imagen dupla filtro filtrada
-;		addu r10, r0, 3		;nf
-;		st r10, r0, 0
-;		LEA(r30, 36840)
-;		LEA(r2, IMAGEN) 
-;		LEA(r3, DUPLA)
-;		LEA(r4, FILTRO)
-;		LEA(r5, FILTRADA)
-;		addu r11, r0, 0		;ncambios
-;		PUSH(r11)
-;		PUSH(r3)
-;		PUSH(r4)
-;		PUSH(r5)
-;		PUSH(r2)
-;		bsr FiltRec
-;		stop
+
+PPAL8:		
+					;Imagen dupla filtro filtrada
+		addu r10, r0, 3		;nf
+		st r10, r0, 0
+		LEA(r30, 36840)
+		LEA(r2, IMAGEN) 
+		LEA(r3, DUPLA)
+		LEA(r4, FILTRO)
+		LEA(r5, FILTRADA)
+		addu r11, r0, 0		;ncambios
+		PUSH(r11)
+		PUSH(r3)
+		PUSH(r4)
+		PUSH(r5)
+		PUSH(r2)
+		bsr FiltRec
+		stop
 ;---------------------------SUBRUTINAS-----------------------------------
 
 ;---------NFILTRADOS----------
@@ -314,8 +314,8 @@ Comp:		PUSH(r1)
 		addu r21, r21, 8
 BUCCMP:		cmp r6, r2, r3
 		bb1 eq, r6, FINCOMP	
-		ld.bu r23, r20, r0	;Im1ij
-		ld.bu r24, r21, r0	;Im2ij
+		ld.b r23, r20, r0	;Im1ij
+		ld.b r24, r21, r0	;Im2ij
 		subu r4, r23, r24	;Im1ij - Im2ij
 		mulu r4, r4, r4		;(Im1ij - Im2ij)^2
 		addu r22, r22, r4	;dif = dif + (Im1ij - Im2ij)^2
