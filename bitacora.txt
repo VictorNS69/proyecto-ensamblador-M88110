@@ -1,3 +1,6 @@
+Autores: Víctor Nieves Sánchez y Daniel Morgera Pérez
+Todo el trabajo realizado es común.
+
 25/10/2018:
 	Creamos subrutinas nFiltrados, Comp, y ActualizaFiltro.
 	Hacemos entrega para la correccion adicional y nFiltrados falla en una prueba.
@@ -35,7 +38,12 @@
 	Tiempo de trabajo: 6 horas aprox.
 
 4/12/2018
-	Intentamos corregir FIltRec, sin éxito.
+	Intentamos corregir FiltRec, sin éxito.
 	No se realizó ninguna entrega.
 	Tiempo de trabajo: 6 horas aprox.
+
+12/12/2018
+	Corregimos FiltRec, éxito aparente.
+	Realizamos segunda entrega adicional, queda 1.
+	Tiempo de trabajo: 5 horas aprox.
 	
