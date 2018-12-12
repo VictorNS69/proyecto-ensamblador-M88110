@@ -132,38 +132,28 @@ POP:    MACRO  (reg)
 
 ;	org 0x8000
 ;IMAGEN:
-;	data 4, 4
-;	data 0x04030201, 0x0D0E0F10, 0x05040302, 0x23222120
-;DUPLA: 	data 1, 1
-;FILTRO: data 1, 1, 1
-;	data 1, 0, 1
-;	data 1, 1, 1
-;FILTRADA: res 24
-;	data 0xAAAAAAAA, 0xAAAAAAAA
+;		data 4, 4
+;		data 0x04030201, 0x0D0E0F10, 0x05040302, 0x23222120
+;DUPLA:	 	data 1, 2
+;FILTRO: 	data 0x0A, 0x0A, 0x0A
+;		data 0x0A, 0, 0x0A
+;		data 0x0A, 0x0A, 0x0A
+;	org 0x8100
+;FILTRADA: 	res 24
+;		data 0xAAAAAAAA, 0xAAAAAAAA
 
-;	org 0x8000
-;IMAGEN:
-;	data 4, 4
-;	data 0x04030201, 0x0D0E0F10, 0x05040302, 0x23222120
-;DUPLA: 	data 1, 1
-;FILTRO: data 1, 1, 1
-;	data 1, 0, 1
-;	data 1, 1, 1
-;FILTRADA: res 24
-;	data 0xAAAAAAAA, 0xAAAAAAAA
-
-	org   0x8000
-IMAGEN:     	data  4, 8
-		data  0xFF0201FF, 0xFF0403FF
-		data  0xFF0605FF, 0xFF0807FF
-		data  0xFF0605FF, 0xFF0807FF
-		data  0xFF0201FF, 0xFF0403FF
-FILTRO:     	data  1, 1, 1
-		data  1, 0, 1
-		data  1, 1, 1
-DUPLA:     	data  4, 2
-	org   0x8100
-FILTRADA: 	res   40
+;	org   0x8000
+;IMAGEN:     	data  4, 8
+;		data  0xFF0201FF, 0xFF0403FF
+;		data  0xFF0605FF, 0xFF0807FF
+;		data  0xFF0605FF, 0xFF0807FF
+;		data  0xFF0201FF, 0xFF0403FF
+;FILTRO:     	data  -1, -1, -1
+;		data  -1,  0, -1
+;		data  -1, -1, -1
+;DUPLA:     	data  4, 2
+;	org   0x8100
+;FILTRADA: 	res   40
 
 ;	org   0x8000
 ;IMAGEN:		data 3, 3
@@ -248,35 +238,34 @@ org 1000
 ;		stop
 
 
-PPAL7:
-		LEA(r30, 5000)
-		LEA(r2, IMAGEN)
-		LEA(r3, FILTRADA)
-		LEA(r4, FILTRO)
-		PUSH(r4)
-		PUSH(r3)
-		PUSH(r2)
-		bsr Filtro
-		stop
+;PPAL7:
+;		LEA(r30, 5000)
+;		LEA(r2, IMAGEN)
+;		LEA(r3, FILTRADA)
+;		LEA(r4, FILTRO)
+;		PUSH(r4)
+;		PUSH(r3)
+;		PUSH(r2)
+;		bsr Filtro
+;		stop
 
 
-PPAL8:		
-					;Imagen dupla filtro filtrada
-		addu r10, r0, 3		;nf
-		st r10, r0, 0
-		LEA(r30, 36840)
-		LEA(r2, IMAGEN) 
-		LEA(r3, DUPLA)
-		LEA(r4, FILTRO)
-		LEA(r5, FILTRADA)
-		addu r11, r0, 0		;ncambios
-		PUSH(r11)
-		PUSH(r3)
-		PUSH(r4)
-		PUSH(r5)
-		PUSH(r2)
-		bsr FiltRec
-		stop
+;PPAL8:		
+;		addu r10, r0, 4		;nf
+;		st r10, r0, 0
+;		LEA(r30, 36840)
+;		LEA(r2, IMAGEN) 
+;		LEA(r3, DUPLA)
+;		LEA(r4, FILTRO)
+;		LEA(r5, FILTRADA)
+;		addu r11, r0, 0		;ncambios
+;		PUSH(r11)
+;		PUSH(r3)
+;		PUSH(r4)
+;		PUSH(r5)
+;		PUSH(r2)
+;		bsr FiltRec
+;		stop
 ;---------------------------SUBRUTINAS-----------------------------------
 
 ;---------NFILTRADOS----------
@@ -380,7 +369,7 @@ NOBORDE:	addu r25, r25, 1	;N principio
 		addu r8, r0, 3		;contador filas
 		addu r9, r0, r0 	;contador avance
 		addu r10, r0, r0	;contador subimagen
-BUCNOBOR:	ld.bu r28, r27, r9	;elemento a r28
+BUCNOBOR:	ld.b r28, r27, r9	;elemento a r28
 		st.b r28, r22, r10	;guardo elemento en submatriz
 		addu r9, r9, 1		;
 		addu r10, r10, 1	;
@@ -394,7 +383,7 @@ BORDE:		addu r25, r25, 1	;N principio
 		;addu r24, r24, 1	;M principio
 		mulu r4, r21, r25	;Nxi
 		addu r4, r4, r20	;ij
-		ld.bu r27, r26, r4	;Imagen(ij)
+		ld.b r27, r26, r4	;Imagen(ij)
 		addu r6, r0, 9		;ContadorDBNZ=9
 		addu r7, r0, 0		;ContadorAvance=0
 BUCSUBM:	st.b r27, r22, r7
