@@ -32,4 +32,8 @@ El proyecto se realizará utilizando el ensamblador nativo del 88110 y empleando
 ```
 
 ## Manual
-[Manual 88110](/Manual88110.pdf)
+[Manual 88110](/doc/Manual88110.pdf)
+
+## Enunciado del proyecto
+[Enunciado](/doc/enunciado_f19.pdf)
+
