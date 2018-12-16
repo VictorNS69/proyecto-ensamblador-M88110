@@ -30,6 +30,18 @@ El proyecto se realizará utilizando el ensamblador nativo del 88110 y empleando
 - INSTALL: ShellScript que instala la aplicación. Además genera el script mc88110 que invoca al emulador 
           con el fichero de configuración serie. Se invoca con ./INSTALL ó sh INSTALL
 ```
+## Compilar y ejecutar un programa principal
+Para poder probar el códgio hay que quitar los comentarios en los datos y el programa principal (_PPALX_) que se quiera ejecutar.
+
+- Compilar:
+```
+88110e -e PPALX -ml -o filtror filtror.ens
+```
+- Ejecutar:
+```
+mc88119 filtror
+```
+Para más información, consultar el manual.
 
 ## Manual
 [Manual 88110](/doc/Manual88110.pdf)
