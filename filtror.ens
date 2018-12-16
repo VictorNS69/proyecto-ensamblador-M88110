@@ -537,7 +537,7 @@ PROG:		addu r19, r19, 8		;MxN+4+4
 		POP(r7)
 		POP(r8)
 ;		-----------------------
-R1:		ld r9, r31, 20		;ModMFiltro
+		ld r9, r31, 20		;ModMFiltro
 		PUSH(r9)
 		PUSH(r8)
 		bsr ActualizaFiltro
@@ -545,7 +545,7 @@ R1:		ld r9, r31, 20		;ModMFiltro
 		POP(r9)
 
 ;		-----------------------
-R2:		addu r21, r0, 0		;contador
+		addu r21, r0, 0		;contador
 		
 BUCCOPIA:	ld r20, r7, r21		;carga palabra de ImOut
 		st r20, r30, r21	;Guardo palabra de ImOut en espacio de ImTmp
@@ -562,18 +562,18 @@ CONTFR:		;POP(r6)
 		cmp r5, r29, 0
 		bb1 eq, r5, NFN		
 ;		-----------------------
-R3:		
+		
 		ld r2, r31, 8		
 		PUSH(r7)
 		PUSH(r2)
 		bsr Comp
-R29:		POP(r2)
+		POP(r2)
 		POP(r7)
 		ld r10, r31, 24		;NCambios
 		cmp r5, r29, r10
 		bb1 lt, r5, FINFR
 ;		-----------------------
-R4:		
+		
 		ld r8, r31, 16		;MFILTRO
 		ld r9, r31, 20		;MODMFILTRO
 		or r2, r30, 0		;R2 = TMP
