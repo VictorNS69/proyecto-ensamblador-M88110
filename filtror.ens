@@ -590,10 +590,3 @@ FINFR:		or r30, r31, 0
 		POP(r31)
 		POP(r1)
 		jmp(r1)
-
-
-
-
-
-
-	
